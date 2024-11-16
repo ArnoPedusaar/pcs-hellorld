@@ -1,0 +1,42 @@
+68K GAS  hellorld.s 			page 1
+
+
+   1               	minitor_entry = 0xff8014
+   2               	minitor_printf = 0xff92e8
+   3               	
+   4               		.global _start
+   5               	
+   6               		.text
+   7 0000 0000 0000 		.org	0x1000
+   7      0000 0000 
+   7      0000 0000 
+   7      0000 0000 
+   7      0000 0000 
+   8               	
+   9               	_start:
+  10 1000 487A 0010 		pea	hellorld_message
+  11 1004 4EB9 00FF 		jsr	minitor_printf
+  11      92E8 
+  12 100a 584F      		add	#4,%sp
+  13               	
+  14 100c 4EF9 00FF 		jmp	minitor_entry
+  14      8014 
+  15               	
+  16               	hellorld_message:
+  17 1012 0D0A 4865 		.asciz	"\r\nHellorld!\r\n\r\n"
+  17      6C6C 6F72 
+  17      6C64 210D 
+  17      0A0D 0A00 
+  18               	
+  19               		# Force full-word segment size for bindump.py
+  20               		.p2align	1
+68K GAS  hellorld.s 			page 2
+
+
+DEFINED SYMBOLS
+          hellorld.s:1      *ABS*:00ff8014 minitor_entry
+          hellorld.s:2      *ABS*:00ff92e8 minitor_printf
+          hellorld.s:9      .text:00001000 _start
+          hellorld.s:16     .text:00001012 hellorld_message
+
+NO UNDEFINED SYMBOLS

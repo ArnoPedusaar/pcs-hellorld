@@ -1,28 +1,20 @@
+minitor_entry = 0xff8014
+minitor_printf = 0xff92e8
+
+	.global _start
+
 	.text
+	.org	0x1000
 
-	.global main
+_start:
+	pea	hellorld_message
+	jsr	minitor_printf
+	add	#4,%sp
 
-minitor_entry = 0xff80aa
-kl_txsr = 0xffff74
-kl_txdr = 0xffff76
+	jmp	minitor_entry
 
-main:
- 	lea	%pc@(message), %a0
+hellorld_message:
+	.asciz	"\r\nHellorld!\r\n\r\n"
 
-loop:
- 	movew	kl_txsr, %d0
-	andiw	#0x0080, %d0
-	beq	loop
-
-       	moveb	%a0@+, %d1
-      	andiw	#0xff, %d1
-	beq	finish
-
- 	movew	%d1, kl_txdr
-       	bras	loop
-
-finish:
-       	jmpl	minitor_entry
-
-message:
-	.asciz	"Hellorld!\r\n"
+	# Force full-word segment size for bindump.py
+	.p2align	1
