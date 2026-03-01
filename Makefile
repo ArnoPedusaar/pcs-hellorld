@@ -1,11 +1,23 @@
-all:	out/hellorld.monitor
+all:	hellorld.monitor
 
-out/hellorld.monitor:	hellorld.s
-	mkdir -p out
-	m68k-linux-gnu-as hellorld.s -m68010 -pic -a=out/hellorld.lst -o out/hellorld.elf
-	m68k-linux-gnu-objcopy -O binary out/hellorld.elf out/hellorld.bin
-	./bindump.py out/hellorld.bin >out/hellorld.monitor
-	cat out/hellorld.monitor
+build:
+	mkdir -p build
+
+build/%.o:	%.s Makefile | build
+	m68k-linux-gnu-as $< -m68010 -o $@
+
+build/hellorld.elf:	build/hellorld.o cadmus-stand.ld | build
+	m68k-linux-gnu-ld -g -z noexecstack -nostdlib -T cadmus-stand.ld $< -o $@
+
+build/hellorld.bin:	build/hellorld.elf | build
+	m68k-linux-gnu-objcopy -O binary $< $@
+
+hellorld.monitor:	build/hellorld.bin | build
+	./bindump.py $< 0x1000 0x0 | tee $@
+
+list:	hellorld.elf
+	m68k-linux-gnu-objdump -j .boot -d $<
+	m68k-linux-gnu-objdump -W -j .rodata -j .data -s $<
 
 clean:
-	rm -f out/*
+	rm -rf build
